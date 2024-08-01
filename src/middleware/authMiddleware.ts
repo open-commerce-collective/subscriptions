@@ -1,6 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import { environment } from '../config/environment';
+
+declare global {
+	namespace Express {
+		interface Request {
+			userId?: string;
+		}
+	}
+}
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
 	const authHeader = req.headers.authorization;
@@ -21,12 +29,20 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 		return res.status(401).json({ error: 'Token malformatted' });
 	}
 
-	jwt.verify(token, environment.jwtSecret, (err, decoded) => {
+	if (!environment.jwtSecret) {
+		return res.status(500).json({ error: 'JWT secret is not configured' });
+	}
+
+	jwt.verify(token, environment.jwtSecret as Secret, (err, decoded) => {
 		if (err) {
 			return res.status(401).json({ error: 'Token invalid' });
 		}
 
-		req.userId = decoded.id;
-		return next();
+		if (decoded && typeof decoded !== 'string') {
+			req.userId = decoded.id;
+			return next();
+		}
+
+		return res.status(401).json({ error: 'Invalid token payload' });
 	});
 };
