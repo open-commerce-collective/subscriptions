@@ -8,70 +8,92 @@ generator client {
 }
 
 model Subscription {
-  id                 String   @id @default(uuid())
-  customerId         String
-  status             String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  nextBillingDate    DateTime
-  nextDeliveryDate   DateTime
-  SubscriptionLine   SubscriptionLine[]
+  id                   String                 @id @default(uuid())
+  customer_id          String
+  plan_id              String
+  start_date           DateTime
+  frequency            Int
+  frequency_unit       FrequencyUnit
+  shipping_address     String?
+  shipping_method      String?
+  payment_method_id    String
+  metadata             String?
+  currency             String?
+  promo_code           String?
+  trial_period         String?
+  is_digital           Boolean
+  status               String
+  lines                SubscriptionLine[]
+  created_at           DateTime               @default(now())
+  updated_at           DateTime               @updatedAt
   SubscriptionActivity SubscriptionActivity[]
 }
 
 model SubscriptionLine {
-  id             String   @id @default(uuid())
-  subscriptionId String
-  productId      String
-  quantity       Int
-  price          Float
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  id                    String       @id @default(uuid())
+  subscription_id       String
+  product_variant_id    String
+  quantity              Int
+  current_price         Decimal
+  selling_plan_id       String?
+  selling_plan_name     String?
+  custom_attributes     Json?
+  discounts             Json?
+  recurring_cycle_limit Int?
+  created_at            DateTime     @default(now())
+  updated_at            DateTime     @updatedAt
+  subscription          Subscription @relation(fields: [subscription_id], references: [id])
 }
 
 model OneTimeAddOn {
-  id             String   @id @default(uuid())
-  subscriptionId String
-  productId      String
-  quantity       Int
-  price          Float
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(uuid())
+  subscription_id String
+  product_id      String
+  quantity        Int
+  price           Float
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 }
 
 model Subscriber {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  firstName String?
-  lastName  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  email      String   @unique
+  first_name String?
+  last_name  String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Order {
-  id             String   @id @default(uuid())
-  subscriptionId String?
-  customerId     String
-  totalPrice     Float
-  status         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(uuid())
+  subscription_id String?
+  customer_id     String
+  total_price     Float
+  status          String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 }
 
 model Webhook {
-  id        String   @id @default(uuid())
-  topic     String
-  address   String
-  format    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  topic      String
+  address    String
+  format     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model SubscriptionActivity {
-  id             String   @id @default(uuid())
-  subscriptionId String
-  action         String
-  createdAt      DateTime @default(now())
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  id              String       @id @default(uuid())
+  subscription_id String
+  action          String
+  created_at      DateTime     @default(now())
+  subscription    Subscription @relation(fields: [subscription_id], references: [id])
+}
+
+enum FrequencyUnit {
+  DAY
+  WEEK
+  MONTH
+  YEAR
 }
