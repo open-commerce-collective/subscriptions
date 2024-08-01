@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import * as subscriptionService from '../services/subscriptions'
 import { Prisma } from '@prisma/client';
 
-export const getSubscriptions = async (req: Request, res: Response) => {
-	try {
-		const subscriptions = await subscriptionService.getSubscriptions();
-		res.json(subscriptions)
-	} catch (error) {
-		console.error('Error in getSubscriptions controller: ', error)
-		res.status(500).json({ error: 'Error fetching subscriptions' })
-	}
-}
+// export const getSubscriptions = async (req: Request, res: Response) => {
+// 	try {
+// 		const subscriptions = await subscriptionService.getSubscriptions();
+// 		res.json(subscriptions)
+// 	} catch (error) {
+// 		console.error('Error in getSubscriptions controller: ', error)
+// 		res.status(500).json({ error: 'Error fetching subscriptions' })
+// 	}
+// }
 
 export const createSubscription = async (req: Request, res: Response) => {
 	try {

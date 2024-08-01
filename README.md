@@ -17,6 +17,8 @@ An open-source solution for managing subscriptions in headless Shopify storefron
 
 ## Installation
 
+- Create Shopify App with CLI
+
 1. Clone the repository: git clone https://github.com/your-username/shopify-subscription-api.git
 
 2. Install dependencies:
