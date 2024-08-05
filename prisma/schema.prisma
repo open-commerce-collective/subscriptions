@@ -7,6 +7,38 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model SellingPlanGroup {
+  id            String        @id @default(uuid())
+  name          String
+  merchant_code String
+  description   String?
+  options       String[]
+  position      Int
+  selling_plans SellingPlan[]
+  products      Product[]     @relation("ProductSellingPlanGroups")
+  variants      Variant[]     @relation("VariantSellingPlanGroups")
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+}
+
+model SellingPlan {
+  id                    String              @id @default(uuid())
+  name                  String
+  description           String?
+  options               String
+  position              Int
+  category              SellingPlanCategory
+  billing_policy        Json
+  delivery_policy       Json
+  pricing_policies      Json[]
+  selling_plan_group_id String
+  selling_plan_group    SellingPlanGroup    @relation(fields: [selling_plan_group_id], references: [id])
+  subscription_lines    SubscriptionLine[]
+  created_at            DateTime            @default(now())
+  updated_at            DateTime            @updatedAt
+  Subscription          Subscription[]
+}
+
 model Subscription {
   id                   String                 @id @default(uuid())
   customer_id          String
@@ -24,6 +56,8 @@ model Subscription {
   is_digital           Boolean
   status               String
   lines                SubscriptionLine[]
+  selling_plan_id      String?
+  selling_plan         SellingPlan?           @relation(fields: [selling_plan_id], references: [id])
   created_at           DateTime               @default(now())
   updated_at           DateTime               @updatedAt
   SubscriptionActivity SubscriptionActivity[]
@@ -36,7 +70,7 @@ model SubscriptionLine {
   quantity              Int
   current_price         Decimal
   selling_plan_id       String?
-  selling_plan_name     String?
+  selling_plan          SellingPlan? @relation(fields: [selling_plan_id], references: [id])
   custom_attributes     Json?
   discounts             Json?
   recurring_cycle_limit Int?
@@ -74,6 +108,28 @@ model Order {
   updated_at      DateTime @updatedAt
 }
 
+model Product {
+  id                    String             @id @default(uuid())
+  title                 String
+  description           String?
+  requires_selling_plan Boolean            @default(false)
+  selling_plan_groups   SellingPlanGroup[] @relation("ProductSellingPlanGroups")
+  variants              Variant[]
+  created_at            DateTime           @default(now())
+  updated_at            DateTime           @updatedAt
+}
+
+model Variant {
+  id                  String             @id @default(uuid())
+  product_id          String
+  product             Product            @relation(fields: [product_id], references: [id])
+  title               String
+  price               Decimal
+  selling_plan_groups SellingPlanGroup[] @relation("VariantSellingPlanGroups")
+  created_at          DateTime           @default(now())
+  updated_at          DateTime           @updatedAt
+}
+
 model Webhook {
   id         String   @id @default(uuid())
   topic      String
@@ -96,4 +152,9 @@ enum FrequencyUnit {
   WEEK
   MONTH
   YEAR
+}
+
+enum SellingPlanCategory {
+  SUBSCRIPTION
+  TRY_BEFORE_YOU_BUY
 }

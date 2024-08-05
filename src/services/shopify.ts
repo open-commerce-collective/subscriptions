@@ -3,6 +3,11 @@ import { client } from '../graphql/client';
 import { CREATE_SUBSCRIPTION_CONTRACT } from '../graphql/mutations/CREATE_SUBSCRIPTION_CONTRACT';
 import { calculateNextBillingDate } from '../utils/calculateNextBillingDate';
 
+
+export const createShopifySellingPlanGroup = async () => {
+
+}
+
 export const createShopifySubscription = async (data: Prisma.SubscriptionCreateInput) => {
 	const nextBillingDate = calculateNextBillingDate(data.start_date, data.frequency, data.frequency_unit)
 	const variables = {

@@ -1,5 +1,6 @@
 import express from 'express'
 import { environment } from './config/environment'
+import sellingPlanRoutes from './routes/plans'
 import subscriptionRoutes from './routes/subscriptions'
 import { errorMiddleware } from './middleware/errorMiddleware'
 import shopify from './config/shopify'
@@ -19,6 +20,9 @@ app.get(
 	shopify.redirectToShopifyOrAppRoot()
 )
 // Webhooks
+
+// Selling Plans API
+app.use('/api/plans/', sellingPlanRoutes)
 
 // Subscriptions API
 app.use(`/api/subscriptions/`, subscriptionRoutes)
